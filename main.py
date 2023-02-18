@@ -1,22 +1,15 @@
-# This is a sample Python script.
-import os
-
 import cv2
+
+from watcher.adb_watcher import ADBWatcher
 
 
 def main():
-    # while True:
-    output = os.popen('adb shell screencap -p > screen.png')
-    print(output.read())
-    screen = cv2.imread('screen.png')
-    cv2.imshow('screen', screen)
+    watcher = ADBWatcher()
+    img = watcher.get_image()
+    print(img.shape)
+    cv2.imshow('screen', img)
     cv2.waitKey(0)
-
-
-def image_process():
-    screen = cv2.imread('screen.png')
-    cv2.imshow('screen', screen)
-    cv2.waitKey(0)
+    pass
 
 
 if __name__ == '__main__':
