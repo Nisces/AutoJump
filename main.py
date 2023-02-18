@@ -1,15 +1,15 @@
-import cv2
-
-from watcher.adb_watcher import ADBWatcher
+from toucher.adb_toucher import ADBToucher
 
 
 def main():
-    watcher = ADBWatcher()
-    img = watcher.get_image()
-    print(img.shape)
-    cv2.imshow('screen', img)
-    cv2.waitKey(0)
-    pass
+    # watcher = ADBWatcher()
+    # img = watcher.get_image()
+    # watcher.get_object(img)
+    # print(img.shape)
+    # cv2.imshow('screen', img)
+    # cv2.waitKey(0)
+    toucher = ADBToucher()
+    toucher.touch(100)
 
 
 if __name__ == '__main__':

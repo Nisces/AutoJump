@@ -7,3 +7,7 @@ class Watcher(metaclass=ABCMeta):
     @abstractmethod
     def get_image(self) -> cv2.Mat:
         pass
+
+    @abstractmethod
+    def get_object(self, img: cv2.Mat):
+        pass
