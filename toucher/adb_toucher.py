@@ -18,4 +18,4 @@ class ADBToucher(Toucher):
         os.popen(f'adb shell input swipe 0 0 0 0 {time}')
 
     def get_touch_time(self, distance: float):
-        return distance / self.FACTOR
+        return distance * self.FACTOR

@@ -13,7 +13,8 @@ def main():
     # img = watcher.get_image()
     img = cv2.imread('screen.png')
     distance = calculator.get_distance(img)
-    toucher.touch(distance)
+    print('next destination distance = ', distance)
+    # toucher.touch(distance)
     cv2.imshow('screen', img)
     cv2.waitKey(0)
 
