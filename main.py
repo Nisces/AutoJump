@@ -6,17 +6,19 @@ from watcher.adb_watcher import ADBWatcher
 
 
 def main():
-    watcher = ADBWatcher()
-    toucher = ADBToucher()
-    calculator = TemplateCalculator()
+    while True:
+        watcher = ADBWatcher()
+        toucher = ADBToucher()
+        calculator = TemplateCalculator()
 
-    # img = watcher.get_image()
-    img = cv2.imread('screen.png')
-    distance = calculator.get_distance(img)
-    print('next destination distance = ', distance)
-    # toucher.touch(distance)
-    cv2.imshow('screen', img)
-    cv2.waitKey(0)
+        img = watcher.get_image()
+        distance = calculator.get_distance(img)
+        img_resize = cv2.resize(img, (img.shape[1] // 2, img.shape[0] // 2))
+        cv2.imshow('ready?', img_resize)
+        print('next destination distance = ', distance)
+
+        toucher.touch(distance)
+        cv2.waitKey(2000)
 
 
 if __name__ == '__main__':

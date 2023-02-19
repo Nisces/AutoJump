@@ -4,11 +4,11 @@ from .toucher import Toucher
 
 
 class ADBToucher(Toucher):
-    FACTOR = 0.85
+    FACTOR = 1.36
 
     def __init__(self):
         output = os.popen('adb devices')
-        print(output.read())
+        # print(output.read())
 
     # 触控操作
     def touch(self, distance: float):
@@ -18,4 +18,4 @@ class ADBToucher(Toucher):
         os.popen(f'adb shell input swipe 0 0 0 0 {time}')
 
     def get_touch_time(self, distance: float):
-        return distance * self.FACTOR
+        return round(distance * self.FACTOR)

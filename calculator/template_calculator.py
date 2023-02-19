@@ -1,6 +1,7 @@
 import math
 
 import cv2
+import numpy as np
 
 from .calculator import Calculator
 
@@ -18,26 +19,52 @@ class Point:
 
 
 # 使用模板匹配的距离计算器
-def get_dst_loc(img):
-    return Point(0, 0)
-
-
 class TemplateCalculator(Calculator):
     TEMPLATE_IMAGE = 'chess.png'
 
+    def __init__(self):
+        self.chess_loc = (0, 0)
+        self.chess_size = (0, 0)
+
     def get_distance(self, img: cv2.Mat) -> float:
-        chess_point = self.get_chess_loc(img)
-
         # draw chess point on the image
-        cv2.rectangle(img, (int(chess_point.x), int(chess_point.y)),
-                      (int(chess_point.x) + 5, int(chess_point.y) + 5),
-                      (255, 0, 0), cv2.FILLED)
-        print('chess_point', chess_point)
-        dst_point = get_dst_loc(img)
-        return chess_point.distance_to(dst_point)
+        chess_point = self.get_chess_loc(img)
+        print('chess_point  = ', chess_point)
+        cv2.circle(img, (int(chess_point.x), int(chess_point.y)), 2, (0, 255, 0), -1)
 
-    def get_chess_loc(self, img):
+        # get destination location and draw
+        dst_center = self.get_dst_loc(img)
+        print('center  = ', dst_center)
+        cv2.circle(img, (int(dst_center.x), int(dst_center.y)), 5, (255, 0, 0), -1)
+
+        return round(chess_point.distance_to(dst_center))
+
+    def get_chess_loc(self, img) -> Point:
         templ = cv2.imread(self.TEMPLATE_IMAGE)
+        self.chess_size = templ.shape[:2]  # [0] is height while [1] is width
+        print('templ.shape = ', templ.shape)
+        print('img.shape = ', img.shape)
         res = cv2.matchTemplate(img, templ, cv2.TM_CCOEFF_NORMED)
         _, _, _, max_loc = cv2.minMaxLoc(res)
-        return Point(max_loc[0] + templ.shape[1] / 2, max_loc[1] + templ.shape[0])
+        self.chess_loc = max_loc
+        return Point(max_loc[0] + self.chess_size[1] / 2, max_loc[1] + self.chess_size[0])
+
+    def get_dst_loc(self, img) -> Point:
+        edge = cv2.Canny(img, 2, 10)
+        for y in range(self.chess_loc[1], self.chess_loc[1] + self.chess_size[0]):
+            for x in range(self.chess_loc[0], self.chess_loc[0] + self.chess_size[1]):
+                edge[y][x] = 0
+        # edge[self.chess_loc[1]:self.chess_loc[1] + self.chess_size[0]][
+        # self.chess_loc[0]:self.chess_loc[0] + self.chess_size[1]] = 0
+        crop_height = int(edge.shape[0] / 4)
+        edge = edge[crop_height:int(edge.shape[0] / 2)]
+        cv2.imshow('edge', edge)
+
+        top_y = np.min(np.nonzero(np.max(edge, axis=1)))
+        right_x = np.max(np.nonzero(np.max(edge, axis=0)))
+        top_x = np.min(np.nonzero(edge[top_y]))
+        right_y = np.min(np.nonzero(edge[:, right_x]))
+        top = Point(top_x, top_y)
+        right = Point(right_x, right_y)
+        center = Point(top_x, right_y + crop_height)
+        return center
