@@ -18,7 +18,9 @@ def main():
         print('next destination distance = ', distance)
 
         toucher.touch(distance)
-        cv2.waitKey(2000)
+        if cv2.waitKey(2500) & 0xFF == ord('q'):
+            cv2.destroyAllWindows()
+            break
 
 
 if __name__ == '__main__':
